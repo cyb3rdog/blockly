@@ -14,6 +14,11 @@
  * @author Emma Dauterman (evd2014)
  */
 
+/**
+ * Namespace for WorkspaceFactoryGenerator
+ */
+var WorkspaceFactoryGenerator = WorkspaceFactoryGenerator || Object.create(null);
+
 
 /**
  * Class for a WorkspaceFactoryGenerator

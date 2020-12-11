@@ -14,6 +14,11 @@
  * @author Emma Dauterman (edauterman)
  */
 
+/**
+ * Namespace for WorkspaceFactoryView
+ */
+var WorkspaceFactoryView = WorkspaceFactoryView || Object.create(null);
+
 
 /**
  * Class for a WorkspaceFactoryView

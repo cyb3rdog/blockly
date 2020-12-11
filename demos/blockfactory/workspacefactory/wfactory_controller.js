@@ -21,6 +21,11 @@
  */
 
 /**
+ * Namespace for WorkspaceFactoryController
+ */
+var WorkspaceFactoryController = WorkspaceFactoryController || Object.create(null);
+
+/**
  * Class for a WorkspaceFactoryController
  * @param {string} toolboxName Name of workspace toolbox XML.
  * @param {string} toolboxDiv Name of div to inject toolbox workspace in.

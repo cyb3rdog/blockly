@@ -17,6 +17,12 @@
  */
 
 /**
+ * Namespace for WorkspaceFactoryModel
+ */
+var WorkspaceFactoryModel = WorkspaceFactoryModel || Object.create(null);
+
+
+/**
  * Class for a WorkspaceFactoryModel
  * @constructor
  */
@@ -466,6 +472,13 @@ WorkspaceFactoryModel.prototype.hasDefinedBlockTypes = function(blockTypes) {
   }
   return false;
 };
+
+
+/**
+ * Namespace for ListElement
+ */
+var ListElement = ListElement || Object.create(null);
+
 
 /**
  * Class for a ListElement.
