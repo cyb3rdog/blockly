@@ -23,9 +23,34 @@ AppController = function() {
       new BlockLibraryController(this.blockLibraryName);
   this.blockLibraryController.populateBlockLibrary();
 
+  toolboxData = document.getElementById('workspacefactory_toolbox');
+
+  workspace = Blockly.inject('toolbox_blocks',
+    {grid:
+      {spacing: 25,
+       length: 3,
+       colour: '#ccc',
+       snap: true},
+       media: '../../media/',
+       toolbox: toolboxData
+     });
+
+  preview  = Blockly.inject('preview_blocks',
+    {grid:
+      {spacing: 25,
+       length: 3,
+       colour: '#ccc',
+       snap: true},
+     media: '../../media/',
+     toolbox: '<xml xmlns="https://developers.google.com/blockly/xml"></xml>',
+     zoom:
+       {controls: true,
+        wheel: true}
+    });
+
   // Construct Workspace Factory Controller.
   this.workspaceFactoryController = new WorkspaceFactoryController
-      ('workspacefactory_toolbox', 'toolbox_blocks', 'preview_blocks');
+      (toolboxData, workspace, preview);
 
   // Initialize Block Exporter
   this.exporter =

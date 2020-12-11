@@ -27,34 +27,14 @@
  * @param {string} previewDiv Name of div to inject preview workspace in.
  * @constructor
  */
-WorkspaceFactoryController = function(toolboxName, toolboxDiv, previewDiv) {
+WorkspaceFactoryController = function(toolbox, workspace, preview) {
   // Toolbox XML element for the editing workspace.
-  this.toolbox = document.getElementById(toolboxName);
-
+  this.toolbox = toolbox;
   // Workspace for user to drag blocks in for a certain category.
-  this.toolboxWorkspace = Blockly.inject(toolboxDiv,
-    {grid:
-      {spacing: 25,
-       length: 3,
-       colour: '#ccc',
-       snap: true},
-       media: '../../media/',
-       toolbox: this.toolbox
-     });
+  this.toolboxWorkspace = workspace;
 
   // Workspace for user to preview their changes.
-  this.previewWorkspace = Blockly.inject(previewDiv,
-    {grid:
-      {spacing: 25,
-       length: 3,
-       colour: '#ccc',
-       snap: true},
-     media: '../../media/',
-     toolbox: '<xml xmlns="https://developers.google.com/blockly/xml"></xml>',
-     zoom:
-       {controls: true,
-        wheel: true}
-    });
+  this.previewWorkspace = preview;
 
   // Model to keep track of categories and blocks.
   this.model = new WorkspaceFactoryModel();
@@ -1200,9 +1180,20 @@ WorkspaceFactoryController.prototype.importBlocks = function(file, format) {
 
   // To be executed when the reader has read the file.
   reader.onload = function() {
+    controller.importBlocksData(categoryName, reader.result, format);
+  }
+
+  // Read the file asynchronously.
+  reader.readAsText(file);
+};
+
+WorkspaceFactoryController.prototype.importBlocksData = function(categoryName, blocksData, format) {
+  // Generate category name from file name.
+  var controller = this;
+
     try {
       // Define blocks using block types from file.
-      var blockTypes = FactoryUtils.defineAndGetBlockTypes(reader.result,
+      var blockTypes = FactoryUtils.defineAndGetBlockTypes(blocksData,
           format);
 
       // If an imported block type is already defined, check if the user wants
@@ -1233,18 +1224,13 @@ WorkspaceFactoryController.prototype.importBlocks = function(file, format) {
       controller.clearAndLoadXml_
           (Blockly.Xml.workspaceToDom(controller.toolboxWorkspace));
 
-      BlocklyDevTools.Analytics.onImport('BlockDefinitions' +
-          (format == 'JSON' ? '.json' : '.js'));
+      //BlocklyDevTools.Analytics.onImport('BlockDefinitions' + (format == 'JSON' ? '.json' : '.js'));
     } catch (e) {
       msg = 'Cannot read blocks from file.';
       alert(msg);
-      BlocklyDevTools.Analytics.onError(msg);
+      //BlocklyDevTools.Analytics.onError(msg);
       window.console.log(e);
     }
-  }
-
-  // Read the file asynchronously.
-  reader.readAsText(file);
 };
 
 /**
