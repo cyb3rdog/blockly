@@ -1185,7 +1185,7 @@ WorkspaceFactoryController.prototype.importBlocks = function(file, format) {
 
   // To be executed when the reader has read the file.
   reader.onload = function() {
-    controller.importBlocksData(categoryName, reader.result, format);
+    return controller.importBlocksData(categoryName, reader.result, format);
   }
 
   // Read the file asynchronously.
@@ -1226,14 +1226,14 @@ WorkspaceFactoryController.prototype.importBlocksData = function(categoryName, b
       // Update imported block types.
       controller.model.addImportedBlockTypes(blockTypes);
       // Reload current category to possibly reflect any newly defined blocks.
-      controller.clearAndLoadXml_
-          (Blockly.Xml.workspaceToDom(controller.toolboxWorkspace));
+      //controller.clearAndLoadXml_
+      //    (Blockly.Xml.workspaceToDom(controller.toolboxWorkspace));
 
-      //BlocklyDevTools.Analytics.onImport('BlockDefinitions' + (format == 'JSON' ? '.json' : '.js'));
+      // Return the result toolbox xml
+      return categoryXml;
     } catch (e) {
       msg = 'Cannot read blocks from file.';
       alert(msg);
-      //BlocklyDevTools.Analytics.onError(msg);
       window.console.log(e);
     }
 };

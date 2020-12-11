@@ -832,7 +832,6 @@ var blockData = {};
  */
 FactoryUtils.defineAndGetBlockTypes = function(blockDefsString, format) {
   var blockTypes = [];
-  blockData = {};
 
   // Define blocks and get block types.
   if (format == 'JSON') {
