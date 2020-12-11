@@ -823,6 +823,7 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
   return blockDefArray;
 };
 
+var blockData = {};
 /**
  * Define blocks from imported block definitions.
  * @param {string} blockDefsString Block definition(s).
@@ -831,20 +832,22 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
  */
 FactoryUtils.defineAndGetBlockTypes = function(blockDefsString, format) {
   var blockTypes = [];
+  blockData = {};
 
   // Define blocks and get block types.
   if (format == 'JSON') {
-    var blockDefArray = FactoryUtils.parseJsonBlockDefinitions(blockDefsString);
+    var blockDefArray = JSON.parse(blockDefsString);
 
     // Populate array of blocktypes and define each block.
     for (var i = 0, blockDef; blockDef = blockDefArray[i]; i++) {
-      var json = JSON.parse(blockDef);
+      var json = blockDef;
       blockTypes.push(json.type);
+      blockData[json.type] = json;
 
       // Define the block.
       Blockly.Blocks[json.type] = {
         init: function() {
-          this.jsonInit(json);
+          this.jsonInit(blockData[this.type]);
         }
       };
     }
