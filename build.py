@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python
 #
 # Deprecation warning: (July 2020)
 # This build script has been deprecated, please use 'npm run build' instead.
@@ -169,6 +169,7 @@ class Gen_compressed(threading.Thread):
 
   def run(self):
     if (self.bundles.core):
+      self.gen_factory()
       self.gen_core()
       self.gen_blocks()
 
@@ -178,6 +179,43 @@ class Gen_compressed(threading.Thread):
       self.gen_generator("php")
       self.gen_generator("lua")
       self.gen_generator("dart")
+
+  def gen_factory(self):
+    target_filename = "factory_compressed.js"
+    # Define the parameters for the POST request.
+    params = [
+        ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
+        ("use_closure_library", "false"),
+        ("output_format", "json"),
+        ("output_info", "compiled_code"),
+        ("output_info", "warnings"),
+        ("output_info", "errors"),
+        ("output_info", "statistics"),
+        ("warning_level", "DEFAULT"),
+      ]
+
+    # Read in all the source files.
+    filenames = calcdeps.CalculateDependencies(self.search_paths,[
+        os.path.join("demos", "blockfactory", "workspacefactory", "wfactory_controller.js"),
+        os.path.join("demos", "blockfactory", "workspacefactory", "wfactory_generator.js"),
+        os.path.join("demos", "blockfactory", "workspacefactory", "wfactory_model.js"),
+        os.path.join("demos", "blockfactory", "workspacefactory", "wfactory_view.js"),
+        os.path.join("demos", "blockfactory", "standard_categories.js"),
+        os.path.join("demos", "blockfactory", "factory_utils.js")
+        ])
+    """filenames.sort()  # Deterministic build. """
+    for filename in filenames:
+      # Filter out the Closure files (the compiler will add them).
+      if filename.startswith("closure"):
+        continue
+      f = codecs.open(filename, encoding="utf-8")
+      code = "".join(f.readlines())
+      # Strip out all requireType calls.
+      code = re.sub(r"goog.requireType(.*)", "", code)
+      params.append(("js_code", code.encode("utf-8")))
+      f.close()
+
+    self.do_compile(params, target_filename, filenames, "")
 
   def gen_core(self):
     target_filename = "blockly_compressed.js"
@@ -487,7 +525,7 @@ def get_args():
 if __name__ == "__main__":
   args = get_args()
   calcdeps = import_path(os.path.join("closure", "bin", "calcdeps.py"))
-  full_search_paths = calcdeps.ExpandDirectories(["core", "closure"])
+  full_search_paths = calcdeps.ExpandDirectories(["demos", "core", "closure"])
   full_search_paths = sorted(full_search_paths)  # Deterministic build.
 
   print("Deprecation Warning: (July 2020)\n This build script has been " +
