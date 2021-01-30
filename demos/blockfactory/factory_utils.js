@@ -823,6 +823,30 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
   return blockDefArray;
 };
 
+/**
+ * @param {BlockSvg} block_svg      parent block that should contain a shadow block
+ * @param {string} input_name       name of the input to be replaced
+ * @param {string} block_name       name of the block to be used for replacing
+ */
+function appendShadowBlock(block_svg, input_name, block_name, block_value) {
+    // create new block in the same workspace as the parent block (flyout's workspace)
+    let shadowBlock = block_svg.workspace.newBlock(block_name);
+    // make this block shadow
+    shadowBlock.setShadow(true);
+    // render it
+    shadowBlock.initSvg();
+    shadowBlock.render();
+
+    // get an output connection
+    let ob = shadowBlock.outputConnection;
+    // get an input connection
+    let cc = block_svg.getInput(input_name).connection;
+
+    // then connect
+    if (cc) cc.connect(ob);
+    return shadowBlock;
+};
+
 var blockData = {};
 /**
  * Define blocks from imported block definitions.
@@ -846,7 +870,20 @@ FactoryUtils.defineAndGetBlockTypes = function(blockDefsString, format) {
       // Define the block.
       Blockly.Blocks[json.type] = {
         init: function() {
-          this.jsonInit(blockData[this.type]);
+          var blockJson = blockData[this.type];
+          this.jsonInit(blockJson);
+          if (blockJson.args0) {
+            for (var i = 0; i < this.inputList.length; i++) {
+              var input = this.inputList[i];
+              for(var j = 0; j < blockJson.args0.length; j++) {
+                var jsonArgs = blockJson.args0[j];
+                if (jsonArgs.name == input.name && jsonArgs.shadow_type && input.connection) {
+                  var shadowType = jsonArgs.shadow_type;
+                  appendShadowBlock(this, input.name, shadowType, null);
+                }
+              }
+            }
+          }
         }
       };
     }
