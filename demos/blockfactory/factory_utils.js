@@ -833,9 +833,7 @@ function appendShadowBlock(block_svg, input_name, block_name, block_value) {
     let shadowBlock = block_svg.workspace.newBlock(block_name);
     // make this block shadow
     shadowBlock.setShadow(true);
-    // render it
-    shadowBlock.initSvg();
-    shadowBlock.render();
+
 
     // get an output connection
     let ob = shadowBlock.outputConnection;
