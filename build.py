@@ -257,6 +257,7 @@ class Gen_compressed(threading.Thread):
     # Define the parameters for the POST request.
     params = [
         ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
+        ("use_closure_library", "false"),
         ("output_format", "json"),
         ("output_info", "compiled_code"),
         ("output_info", "warnings"),
@@ -277,7 +278,9 @@ goog.provide('Blockly.FieldImage');
 goog.provide('Blockly.FieldLabel');
 goog.provide('Blockly.FieldMultilineInput');
 goog.provide('Blockly.FieldNumber');
+goog.provide('Blockly.FieldSlider');
 goog.provide('Blockly.FieldTextInput');
+goog.provide('Blockly.FieldTime');
 goog.provide('Blockly.FieldVariable');
 goog.provide('Blockly.Mutator');
 goog.provide('Blockly.Warning');

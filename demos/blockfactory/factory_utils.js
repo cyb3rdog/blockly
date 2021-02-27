@@ -724,7 +724,13 @@ FactoryUtils.createAndDownloadFile = function(contents, filename, fileType) {
  */
 FactoryUtils.getDefinedBlock = function(blockType, workspace) {
   workspace.clear();
-  return workspace.newBlock(blockType);
+  try {
+    return workspace.newBlock(blockType);
+  }
+  catch (e) {
+    console.log(e);
+  }
+  return null;
 };
 
 /**
@@ -831,9 +837,15 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
 function appendShadowBlock(block_svg, input_name, block_name, block_value) {
     // create new block in the same workspace as the parent block (flyout's workspace)
     let shadowBlock = block_svg.workspace.newBlock(block_name);
+    let shadowInput = shadowBlock.getInput("");
+    let shadowField = shadowInput.fieldRow[0];
+
     // make this block shadow
     shadowBlock.setShadow(true);
 
+    shadowInput.name = input_name;
+    if (block_value || block_value == false)
+        shadowField.setValue(block_value);
 
     // get an output connection
     let ob = shadowBlock.outputConnection;
@@ -876,8 +888,7 @@ FactoryUtils.defineAndGetBlockTypes = function(blockDefsString, format) {
               for(var j = 0; j < blockJson.args0.length; j++) {
                 var jsonArgs = blockJson.args0[j];
                 if (jsonArgs.name == input.name && jsonArgs.shadow_type && input.connection) {
-                  var shadowType = jsonArgs.shadow_type;
-                  appendShadowBlock(this, input.name, shadowType, null);
+                  appendShadowBlock(this, input.name, jsonArgs.shadow_type, jsonArgs.value);
                 }
               }
             }

@@ -61,6 +61,8 @@ goog.require('Blockly.FieldImage');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.FieldMultilineInput');
 goog.require('Blockly.FieldNumber');
+goog.require('Blockly.FieldSlider');
+goog.require('Blockly.FieldTime');
 goog.require('Blockly.FieldVariable');
 
 

@@ -1222,8 +1222,10 @@ WorkspaceFactoryController.prototype.importBlocksData = function(categoryName, b
       // category a different color.
       var randomColor = Math.floor(Math.random() * 360);
       categoryXml.setAttribute('colour', randomColor);
-      controller.toolbox.appendChild(categoryXml);
-      controller.toolboxWorkspace.updateToolbox(controller.toolbox);
+      if (categoryName) {
+        controller.toolbox.appendChild(categoryXml);
+        controller.toolboxWorkspace.updateToolbox(controller.toolbox);
+      };
       // Update imported block types.
       controller.model.addImportedBlockTypes(blockTypes);
       // Reload current category to possibly reflect any newly defined blocks.
