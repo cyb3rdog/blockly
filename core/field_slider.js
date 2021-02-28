@@ -39,30 +39,28 @@ goog.require('Blockly.FieldNumber');
  * @constructor
  */
 Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
-    opt_validator, opt_config) {
+  opt_validator, opt_config) {
 
-    /**
-     * Array holding info needed to unbind events.
-     * Used for disposing.
-     * Ex: [[node, name, func], [node, name, func]].
-     * @type {!Array.<Array<?>>}
-     * @private
-     */
-    this.boundEvents_ = [];
+  /**
+   * Array holding info needed to unbind events.
+   * Used for disposing.
+   * Ex: [[node, name, func], [node, name, func]].
+   * @type {!Array.<Array<?>>}
+   * @private
+   */
+  this.boundEvents_ = [];
 
-    /**
-     * The HTML range input element.
-     * @type {?HTMLInputElement}
-     * @private
-     */
-    this.sliderInput_ = null;
+  /**
+   * The HTML range input element.
+   * @type {?HTMLInputElement}
+   * @private
+   */
+  this.sliderInput_ = null;
 
-
-    Blockly.FieldSlider.superClass_.constructor.call(
-        this, opt_value, opt_min,
-        opt_max, opt_precision, opt_validator, opt_config);
-
-  }
+  Blockly.FieldSlider.superClass_.constructor.call(
+    this, opt_value, opt_min,
+    opt_max, opt_precision, opt_validator, opt_config);
+};
 Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 
 /**
@@ -75,7 +73,7 @@ Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
  */
 Blockly.FieldSlider.fromJson = function(options) {
   return new Blockly.FieldSlider(options['value'],
-   options['min'], options['max'], options['precision'], undefined, options);
+    options['min'], options['max'], options['precision'], undefined, options);
 };
 
 /**
@@ -150,7 +148,7 @@ Blockly.FieldSlider.prototype.dropdownCreate_ = function() {
       sliderInput, 'input', this, this.onSliderChange_));
 
   return wrapper;
-}
+};
 
 /**
  * Disposes of events belonging to the slider editor.
@@ -159,9 +157,9 @@ Blockly.FieldSlider.prototype.dropdownCreate_ = function() {
 Blockly.FieldSlider.prototype.dropdownDispose_ = function () {
   for (var i = 0, event; event = this.boundEvents_[i]; i++) {
     Blockly.unbindEvent_(event);
-  }
+  };
   this.sliderInput_ = null;
-}
+};
 
 /**
  * Sets the text to match the slider's position.
@@ -171,7 +169,7 @@ Blockly.FieldSlider.prototype.onSliderChange_ = function() {
   var fixed = Math.pow(10, this.decimalPlaces_ || 0);
   var value = Math.floor(this.sliderInput_.value * fixed) / fixed;
   this.setEditorValue_(value);
-}
+};
 
 /**
  * Updates the slider when the field rerenders.
@@ -183,113 +181,112 @@ Blockly.FieldSlider.prototype.updateSlider_ = function () {
   }
   var value = Math.min(Math.max(this.getValue(), this.min_), this.max_);
   this.sliderInput_.setAttribute('value', value);
-}
+};
 
 
 /**
  * CSS for slider field.
  */
 Blockly.Css.register([
-    /* eslint-disable indent */
-    '.fieldSliderContainer {',
-    '    align-items: center;',
-    '    display: inline;',
-    '    justify-content: center;',
-    '    width: 100%;',
-    '}',
-    '.fieldSlider {',
-    '    -webkit-appearance: none;',
-    '    background: transparent;',
-    '    margin: 4px;',
-    '    padding: 0;',
-    '}',
-    '.fieldSlider:focus {',
-    '    outline: none;',
-    '}',
+  /* eslint-disable indent */
+  '.fieldSliderContainer {',
+  '  align-items: center;',
+  '  display: inline;',
+  '  justify-content: center;',
+  '  width: 100%;',
+  '}',
+  '.fieldSlider {',
+  '  -webkit-appearance: none;',
+  '  background: transparent;',
+  '  margin: 4px;',
+  '  padding: 0;',
+  '}',
+  '.fieldSlider:focus {',
+  '  outline: none;',
+  '}',
 
-    /* Webkit */
-    '.fieldSlider::-webkit-slider-runnable-track {',
-    '    background: #ddd;',
-    '    border-radius: 10px;',
-    '}',
-    '.fieldSlider::-webkit-slider-thumb {',
-    '    -webkit-appearance: none;',
-    '    background: #fff;',
-    '    border: none;',
-    '    border-radius: 50%;',
-    '    box-shadow: 0 0 0 4px #fefefe;',
-    '    cursor: pointer;',
-    '    height: 12px;',
-    '    width: 12px;',
-    '}',
+  /* Webkit */
+  '.fieldSlider::-webkit-slider-runnable-track {',
+  '  background: #ddd;',
+  '  border-radius: 10px;',
+  '}',
+  '.fieldSlider::-webkit-slider-thumb {',
+  '  -webkit-appearance: none;',
+  '  background: #fff;',
+  '  border: none;',
+  '  border-radius: 50%;',
+  '  box-shadow: 0 0 0 4px #fefefe;',
+  '  cursor: pointer;',
+  '  height: 12px;',
+  '  width: 12px;',
+  '}',
 
-    /* Firefox */
-    '.fieldSlider::-moz-range-track {',
-    '    background: #ddd;',
-    '    border-radius: 10px;',
-    '}',
-    '.fieldSlider::-moz-range-thumb {',
-    '    background: #fff;',
-    '    border: none;',
-    '    border-radius: 50%;',
-    '    box-shadow: 0 0 0 4px #fefefe;',
-    '    cursor: pointer;',
-    '    height: 12px;',
-    '    width: 12px;',
-    '}',
-    '.fieldSlider::-moz-focus-outer {',
-    '    /* override the focus border style */',
-    '    border: 0;',
-    '}',
+  /* Firefox */
+  '.fieldSlider::-moz-range-track {',
+  '  background: #ddd;',
+  '  border-radius: 10px;',
+  '}',
+  '.fieldSlider::-moz-range-thumb {',
+  '  background: #fff;',
+  '  border: none;',
+  '  border-radius: 50%;',
+  '  box-shadow: 0 0 0 4px #fefefe;',
+  '  cursor: pointer;',
+  '  height: 12px;',
+  '  width: 12px;',
+  '}',
+  '.fieldSlider::-moz-focus-outer {',
+  '  /* override the focus border style */',
+  '  border: 0;',
+  '}',
 
-    /* IE */
-    '.fieldSlider::-ms-track {',
-    '    /* IE wont let the thumb overflow the track, so fake it */',
-    '    background: transparent;',
-    '    border-color: transparent;',
-    '    border-width: 15px 0;',
-    '    /* remove default tick marks */',
-    '    color: transparent;',
-    '    height: 10px;',
-    '    width: 100%;',
-    '    margin: -4px 0;',
-    '}',
-    '.fieldSlider::-ms-fill-lower  {',
-    '    background: #ddd;',
-    '    border-radius: 10px;',
-    '}',
-    '.fieldSlider::-ms-fill-upper  {',
-    '    background: #ddd;',
-    '    border-radius: 10px;',
-    '}',
-    '.fieldSlider::-ms-thumb {',
-    '    background: #fff;',
-    '    border: none;',
-    '    border-radius: 50%;',
-    '    box-shadow: 0 0 0 4px #fefefe;',
-    '    cursor: pointer;',
-    '    height: 12px;',
-    '    width: 12px;',
-    '}'
-    /* eslint-enable indent */
+  /* IE */
+  '.fieldSlider::-ms-track {',
+  '  /* IE wont let the thumb overflow the track, so fake it */',
+  '  background: transparent;',
+  '  border-color: transparent;',
+  '  border-width: 15px 0;',
+  '  /* remove default tick marks */',
+  '  color: transparent;',
+  '  height: 10px;',
+  '  width: 100%;',
+  '  margin: -4px 0;',
+  '}',
+  '.fieldSlider::-ms-fill-lower  {',
+  '  background: #ddd;',
+  '  border-radius: 10px;',
+  '}',
+  '.fieldSlider::-ms-fill-upper  {',
+  '  background: #ddd;',
+  '  border-radius: 10px;',
+  '}',
+  '.fieldSlider::-ms-thumb {',
+  '  background: #fff;',
+  '  border: none;',
+  '  border-radius: 50%;',
+  '  box-shadow: 0 0 0 4px #fefefe;',
+  '  cursor: pointer;',
+  '  height: 12px;',
+  '  width: 12px;',
+  '}'
+  /* eslint-enable indent */
 ]);
 
 Blockly.fieldRegistry.register('field_slider', Blockly.FieldSlider);
 
-Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
-    // Block for numeric value.
-    {
-        "type": "math_slider",
-        "message0": "%1",
-        "args0": [{
-            "type": "field_slider",
-            "name": "NUM",
-            "value": 0
-        }],
-        "output": "Number",
-        "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
-        "style": "math_blocks",
-        "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
-        "extensions": ["parent_tooltip_when_inline"]
-    }
-]);
+Blockly.defineBlocksWithJsonArray([// BEGIN JSON EXTRACT
+// Block for numeric value.
+{
+  "type": "math_slider",
+  "message0": "%1",
+  "args0": [{
+    "type": "field_slider",
+    "name": "NUM",
+    "value": 0
+  }],
+  "output": "Number",
+  "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+  "style": "math_blocks",
+  "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+  "extensions": ["parent_tooltip_when_inline"]
+}]);

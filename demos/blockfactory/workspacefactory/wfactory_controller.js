@@ -309,24 +309,13 @@ WorkspaceFactoryController.prototype.exportXmlFile = function(exportMode) {
     this.hasUnsavedPreloadChanges = false;
   } else {
     // Unknown mode. Throw error.
-    var msg = 'Unknown export mode: ' + exportMode;
-    BlocklyDevTools.Analytics.onError(msg);
+    var msg = 'Unknown export mode: ' + exportMode;    
     throw Error(msg);
   }
 
   // Download file.
   var data = new Blob([configXml], {type: 'text/xml'});
   this.view.createAndDownloadFile(fileName, data);
-
-  if (exportMode == WorkspaceFactoryController.MODE_TOOLBOX) {
-    BlocklyDevTools.Analytics.onExport(
-        BlocklyDevTools.Analytics.TOOLBOX,
-        { format: BlocklyDevTools.Analytics.FORMAT_XML });
-  } else if (exportMode == WorkspaceFactoryController.MODE_PRELOAD) {
-    BlocklyDevTools.Analytics.onExport(
-        BlocklyDevTools.Analytics.WORKSPACE_CONTENTS,
-        { format: BlocklyDevTools.Analytics.FORMAT_XML });
-  }
 };
 
 /**
@@ -345,13 +334,6 @@ WorkspaceFactoryController.prototype.exportInjectFile = function() {
   var printableOptions = this.generator.generateInjectString()
   var data = new Blob([printableOptions], {type: 'text/javascript'});
   this.view.createAndDownloadFile(fileName, data);
-
-  BlocklyDevTools.Analytics.onExport(
-      BlocklyDevTools.Analytics.STARTER_CODE,
-      {
-        format: BlocklyDevTools.Analytics.FORMAT_JS,
-        platform: BlocklyDevTools.Analytics.PLATFORM_WEB
-      });
 };
 
 /**
@@ -698,7 +680,6 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
         if (hasToolboxElements) {
             var msg = 'Are you sure you want to import? You will lose your ' +
                 'current toolbox.';
-            BlocklyDevTools.Analytics.onWarning(msg);
             var continueAnyway = confirm();
             if (!continueAnyway) {
               return;
@@ -706,8 +687,6 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
         }
         // Import toolbox XML.
         controller.importToolboxFromTree_(tree);
-        BlocklyDevTools.Analytics.onImport('Toolbox.xml');
-
       } else if (importMode == WorkspaceFactoryController.MODE_PRELOAD) {
         // Switch mode.
         controller.setMode(WorkspaceFactoryController.MODE_PRELOAD);
@@ -717,7 +696,6 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
           var msg = 'Are you sure you want to import? You will lose your ' +
             'current workspace blocks.';
           var continueAnyway = confirm(msg);
-          BlocklyDevTools.Analytics.onWarning(msg);
           if (!continueAnyway) {
             return;
           }
@@ -725,7 +703,6 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
 
         // Import pre-loaded workspace XML.
         controller.importPreloadFromTree_(tree);
-        BlocklyDevTools.Analytics.onImport('WorkspaceContents.xml');
       } else {
         // Throw error if invalid mode.
         throw Error('Unknown import mode: ' + importMode);
@@ -733,7 +710,6 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
     } catch(e) {
       var msg = 'Cannot load XML from file.';
       alert(msg);
-      BlocklyDevTools.Analytics.onError(msg);
       console.log(e);
     } finally {
       Blockly.Events.enable();
@@ -868,7 +844,6 @@ WorkspaceFactoryController.prototype.importPreloadFromTree_ = function(tree) {
 WorkspaceFactoryController.prototype.clearAll = function() {
   var msg = 'Are you sure you want to clear all of your work in Workspace' +
       ' Factory?';
-  BlocklyDevTools.Analytics.onWarning(msg);
   if (!confirm(msg)) {
     return;
   }
@@ -1209,7 +1184,6 @@ WorkspaceFactoryController.prototype.importBlocksData = function(categoryName, b
           + 'already in your toolbox. Are you sure you want to override the '
           + 'currently defined block?';
         var continueAnyway = confirm(msg);
-        BlocklyDevTools.Analytics.onWarning(msg);
         if (!continueAnyway) {
           return;
         }
