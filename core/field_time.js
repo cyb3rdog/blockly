@@ -387,7 +387,7 @@ Blockly.TimePicker.prototype.drawClock = function () {
       ctx.beginPath();
       ctx.arc(0, -halfSize + halfSize / 10, 1, 0, 2 * Math.PI);
       ctx.fill();
-      ctx.rotate(Math.P I / 30);
+      ctx.rotate(Math.PI / 30);
     };
   };
   ctx.translate(0, 2);

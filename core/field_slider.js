@@ -155,8 +155,8 @@ Blockly.FieldSlider.prototype.dropdownCreate_ = function() {
  * @private
  */
 Blockly.FieldSlider.prototype.dropdownDispose_ = function() {
-  for (var i = 0, event; event = this.boundEvents_[i]; i++) {
-    Blockly.unbindEvent_(event);
+  for (var i = 0; i < this.boundEvents_.length; i++) {    
+    Blockly.unbindEvent_(this.boundEvents_[i]);
   }
   this.sliderInput_ = null;
 };
