@@ -27,23 +27,15 @@ goog.require('Blockly.fieldRegistry');
  * @param {Function=} opt_validator A function that is called to valitime
  *    changes to the field's value. Takes in a time string & returns a
  *    valitimed time string ('YYYY-MM-DD' format), or null to abort the change.
- * @param {?(boolean|string)=} opt_textEdit Whether to enable text editor.
+ * @param {?(boolean|string)=} opt_config .
  * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldTime = function(opt_value, opt_validator, opt_config) {
-  /**
-   * Array holding info needed to unbind events.
-   * Used for disposing.
-   * Ex: [[node, name, func], [node, name, func]].
-   * @type {!Array.<Array<?>>}
-   * @private
-   */
-  this.boundEvents_ = [];
 
   /**
    * The HTML Clock canvas element.
-   * @type {?HTMLElement}
+   * @type {?Blockly.TimePicker}
    * @private
    */
   this.timeInput_ = null;
@@ -55,16 +47,19 @@ Blockly.FieldTime = function(opt_value, opt_validator, opt_config) {
   this.useDarkTheme_ = opt_config['useDarkTheme'] == true || opt_config['useDarkTheme'] == 'true';
   this.textEditEnabled_ = opt_config['textEdit'] == true || opt_config['textEdit'] == 'true';
 
-  if (opt_config['time'] == 'NOW') this.clockIsNow_ = true;
-  if (this.clockIsNow_)
+  if (opt_config['time'] == 'NOW') {
+    this.clockIsNow_ = true;
+  }
+  if (this.clockIsNow_) {
     this.textEditEnabled_ = false;
+  }
 
   /**
    * The default value for this field (current time).
    * @type {*}
    * @protected
   */
-  Blockly.FieldTime.prototype.DEFAULT_VALUE = this.hideSeconds_ ? "00:00" :"00:00:00";
+  Blockly.FieldTime.prototype.DEFAULT_VALUE = this.hideSeconds_ ? "00:00" : "00:00:00";
 
   Blockly.FieldTime.superClass_.constructor.call(this, opt_value, opt_validator, opt_config);
 };
@@ -120,10 +115,7 @@ Blockly.FieldTime.prototype.doClassValidation_ = function(opt_newValue) {
     return null;
   }
   // Check if the new value is parsable or not.
-  //if (opt_newValue.indexOf(':') == 3 && opt_newValue.lastIndexOf(':') == 5) {
   return opt_newValue;
-  //}
-  //return null;
 };
 
 /**
@@ -144,14 +136,14 @@ Blockly.FieldTime.prototype.showEditor_ = function(opt_e, _opt_quietInput) {
         Blockly.utils.userAgent.IPAD;
 
     Blockly.FieldTime.superClass_.showEditor_.call(this, opt_e, noFocus);
-  };
+  }
 
   // Build the DOM.
   this.editor_ = this.dropdownCreate_();
 
   Blockly.DropDownDiv.getContentDiv().appendChild(this.editor_);
   Blockly.DropDownDiv.setColour(this.sourceBlock_.style.colourPrimary,
-    this.sourceBlock_.style.colourTertiary);
+      this.sourceBlock_.style.colourTertiary);
   Blockly.DropDownDiv.showPositionedByField(this, this.dropdownDispose_.bind(this));
 };
 
@@ -175,7 +167,7 @@ Blockly.FieldTime.prototype.dropdownCreate_ = function() {
   wrapper.className = 'fieldTimeContainer';
 
   var timeInput = new Blockly.TimePicker(this.clockIsNow_,
-    !this.use12Hours_, !this.hideSeconds_, !this.useDarkTheme_, this.clockSize_);
+      !this.use12Hours_, !this.hideSeconds_, !this.useDarkTheme_, this.clockSize_);
   wrapper.appendChild(timeInput.getElement());
   this.timeInput_ = timeInput;
   this.timeInput_.onUpdate = this.onTimeChange_.bind(this);
@@ -199,11 +191,13 @@ Blockly.FieldTime.prototype.dropdownDispose_ = function() {
 
 /**
  * Sets the text to match the time.
+ * @param {String=} time Time string updated from TimePicker
  * @private
  */
 Blockly.FieldTime.prototype.onTimeChange_ = function(time) {
   this.setEditorValue_(time);
-}
+};
+
 /**
  * Updates the time when the field rerenders.
  * @private
@@ -213,18 +207,23 @@ Blockly.FieldTime.prototype.updateTimeEditor_ = function() {
     return;
   }
   var timeString = this.getValue();
-  if (timeString.length == 3 && timeString.substr(2,1) != ':')
+  if (timeString.length == 3 && timeString.substr(2,1) != ':') {
     this.setEditorValue_(timeString.substr(0,2) + ':' + timeString.substr(2,1));
-  if (timeString.length == 6 && timeString.substr(5,1) != ':')
+  }
+  if (timeString.length == 6 && timeString.substr(5,1) != ':') {
     this.setEditorValue_(timeString.substr(0,5) + ':' + timeString.substr(5,1));
+  }
 
   timeString = this.getValue().replaceAll(':', '');
-  if (timeString.length >= 2)
+  if (timeString.length >= 2) {
     this.timeInput_.setHours(timeString.substr(0,2));
-  if (timeString.length >= 4)
+  }
+  if (timeString.length >= 4) {
     this.timeInput_.setMinutes(timeString.substr(2,2));
-  if (timeString.length >= 6)
+  }
+  if (timeString.length >= 6) {
     this.timeInput_.setSeconds(timeString.substr(4,2));
+  }
 };
 
 /**
@@ -264,21 +263,27 @@ Blockly.defineBlocksWithJsonArray([// BEGIN JSON EXTRACT
     }],
     "output": "String",
     "style": "math_blocks",
-    //"helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
-    //"tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    /*
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    */
     "extensions": ["parent_tooltip_when_inline"]
   }
 ]);
 
-Blockly.TimePicker = function(isClock, is24H, showSecods, isLight, clkSize, clockFont, hour, minute, second) {
+Blockly.TimePicker = function(isClock, is24H, showSecods, isLight, clockSize,
+    clockFont, hour, minute, second) {
+
   this.isClock = !!isClock;
   this.is24H = !!is24H;
   this.showSecods = !!showSecods;
   this.isLight = !!isLight;
   this.hour = hour == undefined ? Blockly.TimePicker.getHours() : ~~hour % 24;
   this.minute = minute == undefined ? Blockly.TimePicker.getMinutes() : ~~minute % 60;
-  this.second =  minute == undefined ? Blockly.TimePicker.getSeconds() : ~~second % 60;
-  if (!this.isClock && !this.showSecods) this.second = 0;
+  this.second = second == undefined ? Blockly.TimePicker.getSeconds() : ~~second % 60;
+  if (!this.isClock && !this.showSecods) {
+    this.second = 0;
+  }
 
   this.clockSize = (clockSize) ? clockSize : 180;
   this.clockFont = (clockFont) ? clockFont : '16px Verdana';
@@ -321,7 +326,7 @@ Blockly.TimePicker = function(isClock, is24H, showSecods, isLight, clkSize, cloc
 
 Blockly.TimePicker.prototype.onUpdate = null;
 
-Blockly.TimePicker.prototype.createDOM = function () {
+Blockly.TimePicker.prototype.createDOM = function() {
   // Initialize
   var halfSize = this.clockSize / 2;
   this.clockCanvas.setAttribute('width', this.clockSize);
@@ -337,8 +342,6 @@ Blockly.TimePicker.prototype.createDOM = function () {
   this.hourHand.style.cssText = 'position:absolute;left:' + (halfSize - 10) + 'px;top:' + (halfSize / 4) + 'px;transform-origin:50% ' + (halfSize - 20) + 'px';
   this.minuteHand.style.cssText = 'position:absolute;left:' + (halfSize - 6) + 'px;top:' + (halfSize / 8) + 'px;transform-origin:50% ' + (halfSize - 10) + 'px';
   this.secondHand.style.cssText = 'position:absolute;left:' + (halfSize - 4) + 'px;top:' + (halfSize / 8) + 'px;transform-origin:50% ' + (halfSize - 10) + 'px';
-  //minuteHand.style.cssText='position:absolute;left:114px;top:30px;transform-origin:50% 90px';
-  //secondHand.style.cssText='position:absolute;left:116px;top:30px;transform-origin:50% 90px';
   this.clockDiv.style.display = 'none';
   this.clockDiv.appendChild(this.clockCanvas);
   this.clockDiv.appendChild(this.hourHand);
@@ -351,17 +354,18 @@ Blockly.TimePicker.prototype.createDOM = function () {
     this.bindClockEvents();
     Blockly.TimePicker.setCursor(this.hourHand, true);
     Blockly.TimePicker.setCursor(this.minuteHand, true);
-    if(this.showSecods)
+    if (this.showSecods) {
       Blockly.TimePicker.setCursor(this.secondHand, true);
-    else
+    } else {
       this.secondHand.style.display = 'none';
+    }
   }
   this.updateClock();
   this.onUpdateTime();
   this.drawClock();
 };
 
-Blockly.TimePicker.prototype.drawClock = function () {
+Blockly.TimePicker.prototype.drawClock = function() {
   // Create clock surface
   var halfSize = this.clockSize / 2;
   var ctx = this.clockCanvas.getContext('2d');
@@ -388,15 +392,16 @@ Blockly.TimePicker.prototype.drawClock = function () {
       ctx.arc(0, -halfSize + halfSize / 10, 1, 0, 2 * Math.PI);
       ctx.fill();
       ctx.rotate(Math.PI / 30);
-    };
-  };
+    }
+  }
   ctx.translate(0, 2);
   ctx.font = this.clockFont;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   for (var i = 1; i <= 12; i++) {
-    ctx.fillText(i, 0.74 * halfSize * Math.sin(i * Math.PI / 6), -0.74 * halfSize * Math.cos(i * Math.PI / 6));
-  };
+    ctx.fillText(i, 0.74 * halfSize * Math.sin(i * Math.PI / 6), -0.74 * halfSize *
+        Math.cos(i * Math.PI / 6));
+  }
   ctx.translate(-halfSize, -halfSize);
 
   // Create hour hand
@@ -464,12 +469,12 @@ Blockly.TimePicker.prototype.onMouseUp = function(e) {
 };
 Blockly.TimePicker.prototype.onTouchStart = function(e) {
   e = e || window.event;
-  if (this.isDragging && !this.isFiredByMouse && e.touches.length == 1)
+  if (this.isDragging && !this.isFiredByMouse && e.touches.length == 1) {
     this.isDragging = false;
+  }
   if (!this.isDragging) {
     var touch = e.changedTouches[0];
     e.preventDefault();
-    //e.stopPropagation();
     this.isFiredByMouse = false;
     this.touchId = touch.identifier;
     this.isHourHand = touch.target == this.hourHand;
@@ -506,64 +511,70 @@ Blockly.TimePicker.prototype.onTouchEnd = function(e) {
 };
 Blockly.TimePicker.prototype.onPtrStart = function(x, y) {
   this.isDragging = true;
-  //centerX=tpick.offsetLeft+hourHand.offsetLeft+10;
-  //centerY=tpick.offsetTop+hourHand.offsetTop+70;
-  this.centerX = this.clockDiv.parentElement.parentElement.parentElement.offsetLeft + this.hourHand.offsetLeft + 10;
-  this.centerY = this.clockDiv.parentElement.parentElement.parentElement.offsetTop + this.hourHand.offsetTop + 70;
+  var offsetElement = this.clockDiv.parentElement.parentElement.parentElement;
+  this.centerX = offsetElement.offsetLeft + this.hourHand.offsetLeft + 10;
+  this.centerY = offsetElement.offsetTop + this.hourHand.offsetTop + 70;
   var last = this.isHourHand ? this.lastHourDeg : this.lastMinuteDeg
     , deg = -Math.atan2(this.centerX - x, this.centerY - y) * 180 / Math.PI
     , dif = Math.abs(deg - last);
   this.isReverseRotate = (160 < dif && dif < 200);
 };
 Blockly.TimePicker.prototype.onPtrMove = function(x, y) {
-  var deg, last, target;
+  var deg, target;
   if (x != this.centerX || y != this.centerY) {
     deg = -Math.atan2(this.centerX - x, this.centerY - y) * 180 / Math.PI;
-    if (this.isReverseRotate) deg = deg - 180;
-    if (deg < 0) deg += 360;
+    if (this.isReverseRotate) { deg = deg - 180; }
+    if (deg < 0) { deg += 360; }
     target = this.isHourHand ? this.hourHand : this.minuteHand;
     this.rotateElement(target, deg);
     if (this.isHourHand) {
-      if ((0 <= deg && deg < 90 && 270 < this.lastHourDeg && this.lastHourDeg < 360) || (0 <= this.lastHourDeg && this.lastHourDeg < 90 && 270 < deg && deg < 360))
+      if ((0 <= deg && deg < 90 && 270 < this.lastHourDeg && this.lastHourDeg < 360) ||
+          (0 <= this.lastHourDeg && this.lastHourDeg < 90 && 270 < deg && deg < 360)) {
         this.isPM = !this.isPM;
+      }
       this.lastHourDeg = deg;
       this.lastMinuteDeg = deg % 30 * 12;
       this.rotateElement(this.minuteHand, this.lastMinuteDeg);
     } else {
-      if ((270 < this.lastMinuteDeg && this.lastMinuteDeg < 360 && 0 <= deg && deg < 90) || (270 < deg && deg < 360 && 0 <= this.lastMinuteDeg && this.lastMinuteDeg < 90)) {
-        this.lastHourDeg = this.lastHourDeg + (deg - this.lastMinuteDeg - Blockly.TimePicker.sign(deg - this.lastMinuteDeg) * 360) / 12;
-        if (this.lastHourDeg < 0) this.lastHourDeg += 360;
+      if ((270 < this.lastMinuteDeg && this.lastMinuteDeg < 360 && 0 <= deg && deg < 90) ||
+         (270 < deg && deg < 360 && 0 <= this.lastMinuteDeg && this.lastMinuteDeg < 90)) {
+        this.lastHourDeg = this.lastHourDeg + (deg - this.lastMinuteDeg -
+            Blockly.TimePicker.sign(deg - this.lastMinuteDeg) * 360) / 12;
+        if (this.lastHourDeg < 0) { this.lastHourDeg += 360; }
         this.lastHourDeg %= 360;
-        if (345 < this.lastHourDeg || this.lastHourDeg < 15)
+        if (345 < this.lastHourDeg || this.lastHourDeg < 15) {
           this.isPM = !this.isPM;
+        }
       } else {
         this.lastHourDeg = this.lastHourDeg + (deg - this.lastMinuteDeg) / 12;
-        if (this.lastHourDeg < 0) this.lastHourDeg += 360;
+        if (this.lastHourDeg < 0) { this.lastHourDeg += 360; }
         this.lastHourDeg %= 360;
-      };
+      }
       this.lastMinuteDeg = deg;
       this.rotateElement(this.hourHand, this.lastHourDeg);
-    };
+    }
     this.minute = 6 * this.lastHourDeg / 180;
     this.hour = ~~this.minute;
     this.minute = Math.floor((this.minute - this.hour) * 60);
-    if (this.isPM) this.hour += 12;
+    if (this.isPM) { this.hour += 12; }
     this.onUpdateTime();
-  };
+  }
 };
 Blockly.TimePicker.prototype.onUpdateTime = function() {
-  if (typeof this.onUpdate == 'function' && !this.isClock)
+  if (typeof this.onUpdate == 'function' && !this.isClock) {
     this.onUpdate(this.getTimeString());
+  }
 };
 Blockly.TimePicker.prototype.drawClockTime = function() {
   this.second = Blockly.TimePicker.getSeconds();
-  if (this.isClock)
+  if (this.isClock) {
     this.timerId = setTimeout(this.drawClockTime.bind(this), 1e3 - Blockly.TimePicker.getMillis());
+  }
   if (this.second == 0) {
     this.minute = Blockly.TimePicker.getMinutes();
     this.hour = Blockly.TimePicker.getHours();
     this.onUpdateTime();
-  };
+  }
   this.updateClock();
 };
 Blockly.TimePicker.prototype.updateClock = function() {
@@ -584,16 +595,16 @@ Blockly.TimePicker.prototype.scrollToFix = function() {
     , rect = this.clockDiv.getBoundingClientRect()
     , hsSpc = dw > vw ? 20 : 0
     , scrollX = rect.left < 0 ? rect.left : 0
-    , scrollY = rect.bottom - rect.top > vh ? rect.top : rect.bottom > vh - hsSpc ? rect.bottom - vh + hsSpc : 0;
+    , scrollY = (rect.bottom - rect.top > vh) ? rect.top : (rect.bottom > vh - hsSpc) ?
+        rect.bottom - vh + hsSpc : 0;
   window.scrollBy(scrollX, scrollY);
 };
 Blockly.TimePicker.prototype.bindClockEvents = function() {
-  //Blockly.bindEventWithChecks_(this.hourHand, 'mousedown', this, this.onMouseDown, true);
   Blockly.TimePicker.addEvent(this.hourHand, 'mousedown', this, this.onMouseDown);
   Blockly.TimePicker.addEvent(this.minuteHand, 'mousedown', this, this.onMouseDown);
   Blockly.TimePicker.addEvent(document, 'mousemove', this, this.onMouseMove);
   Blockly.TimePicker.addEvent(document, 'mouseup', this, this.onMouseUp);
-  if ('touchstart'in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
+  if ('touchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
     Blockly.TimePicker.addEvent(this.hourHand, 'touchstart', this, this.onTouchStart);
     Blockly.TimePicker.addEvent(this.hourHand, 'touchmove', this, this.onTouchMove);
     Blockly.TimePicker.addEvent(this.hourHand, 'touchcancel', this, this.onTouchEnd);
@@ -602,14 +613,14 @@ Blockly.TimePicker.prototype.bindClockEvents = function() {
     Blockly.TimePicker.addEvent(this.minuteHand, 'touchmove', this, this.onTouchMove);
     Blockly.TimePicker.addEvent(this.minuteHand, 'touchcancel', this, this.onTouchEnd);
     Blockly.TimePicker.addEvent(this.minuteHand, 'touchend', this, this.onTouchEnd);
-  };
+  }
 };
 Blockly.TimePicker.prototype.unbindClockEvents = function() {
   Blockly.TimePicker.removeEvent(this.hourHand, 'mousedown', this.onMouseDown);
   Blockly.TimePicker.removeEvent(this.minuteHand, 'mousedown', this.onMouseDown);
   Blockly.TimePicker.removeEvent(document, 'mousemove', this.onMouseMove);
   Blockly.TimePicker.removeEvent(document, 'mouseup', this.onMouseUp);
-  if ('touchstart'in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
+  if ('touchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
     Blockly.TimePicker.removeEvent(this.hourHand, 'touchstart', this.onTouchStart);
     Blockly.TimePicker.removeEvent(this.hourHand, 'touchmove', this.onTouchMove);
     Blockly.TimePicker.removeEvent(this.hourHand, 'touchcancel', this.onTouchEnd);
@@ -618,23 +629,17 @@ Blockly.TimePicker.prototype.unbindClockEvents = function() {
     Blockly.TimePicker.removeEvent(this.minuteHand, 'touchmove', this.onTouchMove);
     Blockly.TimePicker.removeEvent(this.minuteHand, 'touchcancel', this.onTouchEnd);
     Blockly.TimePicker.removeEvent(this.minuteHand, 'touchend', this.onTouchEnd);
-  };
+  }
 };
 
-Blockly.TimePicker.prototype.attachTo = function(el) {
-  if (el.appendChild && !tpick.parentNode) {
-    el.appendChild(tpick);
-    return true;
-  }
-  return false;
-};
-Blockly.TimePicker.prototype.destroy = function () {
+Blockly.TimePicker.prototype.destroy = function() {
   this.unbindClockEvents();
   while (this.clockDiv.firstChild) {
     this.clockDiv.removeChild(this.clockDiv.lastChild);
-  };
-  if (this.clockDiv.parentNode)
+  }
+  if (this.clockDiv.parentNode) {
     this.clockDiv.parentNode.removeChild(this.clockDiv);
+  }
 };
 Blockly.TimePicker.prototype.getElement = function() {
   return this.clockDiv;
@@ -650,9 +655,10 @@ Blockly.TimePicker.prototype.getTime = function() {
 };
 Blockly.TimePicker.prototype.getTimeString = function() {
   var result = ('0' + (this.is24H ? this.hour : this.hour % 12 == 0 ? 12 : this.hour % 12)).slice(-2) + ':' + ('0' + this.minute).slice(-2);
-  if (this.showSecods) result+= ':' + ('0' + this.second).slice(-2);
-  if (!this.is24H)
+  if (this.showSecods) { result += ':' + ('0' + this.second).slice(-2); }
+  if (!this.is24H) {
     result += ' ' + (this.isPM ? 'PM' : 'AM');
+  }
   return result;
 };
 Blockly.TimePicker.prototype.hideClock = function() {
@@ -677,7 +683,7 @@ Blockly.TimePicker.prototype.set24Hour = function(h) {
   if (typeof h == 'boolean' && h != this.is24H) {
     this.is24H = h;
     this.onUpdateTime();
-  };
+  }
 };
 Blockly.TimePicker.prototype.setClockMode = function(m) {
   if (typeof m == 'boolean' && m != this.isClock) {
@@ -690,7 +696,7 @@ Blockly.TimePicker.prototype.setClockMode = function(m) {
       this.hour = Blockly.TimePicker.getHours();
       this.minute = Blockly.TimePicker.getMinutes();
       this.drawClockTime();
-      //this.onUpdateTime();
+      /* this.onUpdateTime(); */
     } else {
       this.second = 0;
       window.clearInterval(this.timerId);
@@ -701,67 +707,71 @@ Blockly.TimePicker.prototype.setClockMode = function(m) {
 Blockly.TimePicker.prototype.setHours = function(h) {
   if (!this.isClock && !isNaN(h)) {
     this.hour = parseInt(h) % 24;
-    if (!this.showSecods) this.second = 0;
+    if (!this.showSecods) { this.second = 0; }
     this.updateClock();
-    //this.onUpdateTime();
-  };
+    /* this.onUpdateTime(); */
+  }
 };
 Blockly.TimePicker.prototype.setLightTheme = function(t) {
   if (typeof t == 'boolean' && t != this.isLight) {
     this.isLight = t;
     this.drawClock();
-  };
+  }
 };
 Blockly.TimePicker.prototype.setMinutes = function(m) {
   if (!this.isClock && !isNaN(m)) {
     this.minute = parseInt(m) % 60;
-    if (!this.showSecods) this.second = 0;
+    if (!this.showSecods) { this.second = 0; }
     this.updateClock();
-    //this.onUpdateTime();
-  };
+    /* this.onUpdateTime(); */
+  }
 };
 Blockly.TimePicker.prototype.setSeconds = function(s) {
   if (!this.isClock && !isNaN(s)) {
     this.second = parseInt(s) % 60;
-    if (!this.showSecods) this.second = 0;
+    if (!this.showSecods) { this.second = 0; }
     this.updateClock();
-    //this.onUpdateTime();
-  };
+    /* this.onUpdateTime(); */
+  }
 };
-Blockly.TimePicker.prototype.showClock = function () {
+Blockly.TimePicker.prototype.showClock = function() {
   if (typeof this.clockDiv.parentNode == 'undefined') {
     alert("TimePicker element hasn't attached yet!");
     return;
-  };
+  }
   if (this.isHidden) {
     this.isHidden = !this.isHidden;
     this.clockDiv.style.display = '';
     this.scrollToFix();
-  };
+  }
 };
 
 /* Static Methods */
 Blockly.TimePicker.addEvent = function(element, event, instance, callback) {
-  if (window.addEventListener)
+  if (window.addEventListener) {
     element.addEventListener(event, callback.bind(instance));
-  else
+  } else {
     element.attachEvent('on' + event, callback.bind(instance));
+  }
 };
 Blockly.TimePicker.removeEvent = function(el, ev, cb) {
-  if (window.addEventListener)
+  if (window.addEventListener) {
     el.removeEventListener(ev, cb);
-  else
+  } else {
     el.detachEvent('on' + ev, cb);
+  }
 };
 Blockly.TimePicker.setCursor = function(e, p) {
-  e.style.cursor = p ? 'pointer' : 'default'
+  e.style.cursor = p ? 'pointer' : 'default';
 };
 Blockly.TimePicker.getSupportedTransformProp = function() {
   var props = ['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform']
     , root = document.documentElement;
-  for (var i = 0; i < props.length; i++)
-    if (props[i]in root.style)
+  for (var i = 0; i < props.length; i++) {
+    if (props[i] in root.style) {
       return props[i];
+    }
+  }
   return null;
 };
 Blockly.TimePicker.tzOffset = Date.parse('01 Jan 1970');
@@ -778,11 +788,11 @@ Blockly.TimePicker.getSeconds = function() {
   return parseInt(Blockly.TimePicker.getTime() / 1e3) % 60;
 };
 Blockly.TimePicker.getMillis = function() {
-  return Blockly.TimePicker.getTime() % 1e3
+  return Blockly.TimePicker.getTime() % 1e3;
 };
 Blockly.TimePicker.sign = function(n) {
-  if (isNaN(n)) return NaN;
-  if (n == 0) return 0;
-  if (n < 0) return -1;
+  if (isNaN(n)) { return NaN; }
+  if (n == 0) { return 0; }
+  if (n < 0) { return -1; }
   return 1;
 };

@@ -67,22 +67,13 @@ Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
  * Constructs a FieldSlider from a JSON arg object.
  * @param {!Object} options A JSON object with options (value, min, max, and
  *                          precision).
- * @return {!FieldSlider} The new field instance.
+ * @return {!Blockly.FieldSlider} The new field instance.
  * @package
  * @nocollapse
  */
 Blockly.FieldSlider.fromJson = function(options) {
   return new Blockly.FieldSlider(options['value'],
       options['min'], options['max'], options['precision'], undefined, options);
-};
-
-/**
- * Configure the field based on the given map of options.
- * @param {!Object} config A map of options to configure the field based on.
- * @private
- */
-Blockly.FieldSlider.prototype.configure_ = function(config) {
-  Blockly.FieldSlider.superClass_.configure_.call(this, config);
 };
 
 /**
