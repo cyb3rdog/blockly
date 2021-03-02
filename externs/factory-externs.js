@@ -11,7 +11,7 @@
 
 goog.provide('WorkspaceFactoryController');
 goog.provide('WorkspaceFactoryGenerator');
-/* goog.provide('WorkspaceFactoryInit'); */
+goog.provide('WorkspaceFactoryInit');
 goog.provide('WorkspaceFactoryModel');
 goog.provide('WorkspaceFactoryView');
 goog.provide('StandardCategories');

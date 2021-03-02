@@ -1,6 +1,6 @@
 {
   "name": "blockly",
-  "version": "4.20210302.cyb3r",
+  "version": "4.20210302.0",
   "description": "Blockly is a library for building visual programming editors.",
   "keywords": [
     "blockly"
@@ -26,6 +26,7 @@
     "build:strict": "gulp buildCompressed --verbose --strict",
     "build:strict:log": "npm run build:strict > build-debug.log 2>&1 && tail -3 build-debug.log",
     "build:generators": "gulp buildGenerators",
+    "build:factory": "gulp buildFactory",
     "build:langfiles": "gulp buildLangfiles",
     "build:uncompressed": "gulp buildUncompressed",
     "bump": "npm --no-git-tag-version version 4.$(date +'%Y%m%d').0",

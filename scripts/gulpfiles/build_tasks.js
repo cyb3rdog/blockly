@@ -221,29 +221,16 @@ function buildCompressed() {
 };
 
 function buildFactory() {
-  const defines = 'Blockly.VERSION="' + packageJson.version + '"';
-  return gulp.src(maybeAddClosureLibrary(['demos/blockfactory/**/**/*.js']), {base: './demos/blockfactory/'})
+  return gulp.src(['demos/blockfactory/workspacefactory/*.js', 'demos/blockfactory/factory_utils.js',
+      'demos/blockfactory/standard_categories.js'], {base: './demos/blockfactory/'})
     .pipe(stripApacheLicense())
     .pipe(gulp.sourcemaps.init())
-    // Directories in Blockly are used to group similar files together
-    // but are not used to limit access with @package, instead the
-    // method means something is internal to Blockly and not a public
-    // API.
-    // Flatten all files so they're in the same directory, but ensure that
-    // files with the same name don't conflict.
-    .pipe(gulp.rename(function (p) {
-      var dirname = p.dirname.replace(
-        new RegExp(path.sep.replace(/\\/, '\\\\'), "g"), "-");
-      p.dirname = "";
-      p.basename = dirname + "-" + p.basename;
-    }))
     .pipe(compile({
       dependency_mode: 'NONE',
       js_output_file: 'factory_compressed.js',
       externs: ['./externs/factory-externs.js', './externs/goog-externs.js'],
       language_in:
-        argv.closureLibrary ? 'ECMASCRIPT_2015' : 'ECMASCRIPT5_STRICT',
-      output_wrapper: outputWrapperUMD('Blockly', [])
+        argv.closureLibrary ? 'ECMASCRIPT_2015' : 'ECMASCRIPT5_STRICT'
     }, argv.verbose, argv.debug, argv.strict))
     .pipe(gulp.sourcemaps.mapSources(function (sourcePath, file) {
       return sourcePath.replace(/-/g, '/');
@@ -557,5 +544,6 @@ module.exports = {
   uncompressed: buildUncompressed,
   compressed: buildCompressed,
   generators: buildGenerators,
+  factory: buildFactory,
   advancedCompilationTest: buildAdvancedCompilationTest,
 }
