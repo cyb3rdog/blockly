@@ -119,7 +119,7 @@ Blockly.FieldSlider.prototype.render_ = function() {
 
 /**
  * Creates the slider editor and add event listeners.
- * @return {!Element} The newly created slider.
+ * @return {!HTMLElement} The newly created slider.
  * @private
  */
 Blockly.FieldSlider.prototype.dropdownCreate_ = function() {
@@ -130,10 +130,10 @@ Blockly.FieldSlider.prototype.dropdownCreate_ = function() {
   sliderInput.setAttribute('min', this.min_);
   sliderInput.setAttribute('max', this.max_);
   sliderInput.setAttribute('step', this.precision_);
-  sliderInput.setAttribute('value', this.getValue());
   sliderInput.className = 'fieldSlider';
   wrapper.appendChild(sliderInput);
   this.sliderInput_ = sliderInput;
+  this.updateSlider_();
 
   this.boundEvents_.push(Blockly.bindEventWithChecks_(
       sliderInput, 'input', this, this.onSliderChange_));

@@ -836,9 +836,9 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
  */
 function appendShadowBlock(block_svg, input_name, block_name, block_value) {
     // create new block in the same workspace as the parent block (flyout's workspace)
-    let shadowBlock = block_svg.workspace.newBlock(block_name);
-    let shadowInput = shadowBlock.getInput("");
-    let shadowField = shadowInput.fieldRow[0];
+    var shadowBlock = block_svg.workspace.newBlock(block_name);
+    var shadowInput = shadowBlock.getInput("");
+    var shadowField = shadowInput.fieldRow[0];
 
     // make this block shadow
     shadowBlock.setShadow(true);
@@ -848,9 +848,9 @@ function appendShadowBlock(block_svg, input_name, block_name, block_value) {
         shadowField.setValue(block_value);
 
     // get an output connection
-    let ob = shadowBlock.outputConnection;
+    var ob = shadowBlock.outputConnection;
     // get an input connection
-    let cc = block_svg.getInput(input_name).connection;
+    var cc = block_svg.getInput(input_name).connection;
 
     // then connect
     if (cc) cc.connect(ob);
