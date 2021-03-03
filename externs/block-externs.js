@@ -26,4 +26,7 @@ goog.provide('Blockly.FieldVariable');
 goog.provide('Blockly.Mutator');
 goog.provide('Blockly.Warning');
 
+goog.provide('Blockly.Cyb3rBlocks');
+goog.provide('Blockly.Cyb3rBlocks.AdvancedMutator');
+
 var Blockly;

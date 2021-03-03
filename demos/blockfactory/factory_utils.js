@@ -833,28 +833,31 @@ FactoryUtils.parseJsonBlockDefinitions = function(blockDefsString) {
  * @param {BlockSvg} block_svg      parent block that should contain a shadow block
  * @param {string} input_name       name of the input to be replaced
  * @param {string} block_name       name of the block to be used for replacing
+ * @param {string} block_value       default Value
+ * @returns {any} new field
  */
 function appendShadowBlock(block_svg, input_name, block_name, block_value) {
-    // create new block in the same workspace as the parent block (flyout's workspace)
-    var shadowBlock = block_svg.workspace.newBlock(block_name);
-    var shadowInput = shadowBlock.getInput("");
-    var shadowField = shadowInput.fieldRow[0];
+  // create new block in the same workspace as the parent block (flyout's workspace)
+  var shadowBlock = block_svg.workspace.newBlock(block_name);
+  var shadowInput = shadowBlock.getInput("");
+  var shadowField = shadowInput.fieldRow[0];
 
-    // make this block shadow
-    shadowBlock.setShadow(true);
+  // make this block shadow
+  shadowBlock.setShadow(true);
 
-    shadowInput.name = input_name;
-    if (block_value || block_value == false)
-        shadowField.setValue(block_value);
+  shadowInput.name = input_name;
+  if (block_value || block_value == false) {
+    shadowField.setValue(block_value);
+  }
 
-    // get an output connection
-    var ob = shadowBlock.outputConnection;
-    // get an input connection
-    var cc = block_svg.getInput(input_name).connection;
+  // get an output connection
+  var ob = shadowBlock.outputConnection;
+  // get an input connection
+  var cc = block_svg.getInput(input_name).connection;
 
-    // then connect
-    if (cc) cc.connect(ob);
-    return shadowBlock;
+  // then connect
+  if (cc) { cc.connect(ob); }
+  return shadowBlock;
 };
 
 var blockData = {};
@@ -885,10 +888,11 @@ FactoryUtils.defineAndGetBlockTypes = function(blockDefsString, format) {
           if (blockJson.args0) {
             for (var i = 0; i < this.inputList.length; i++) {
               var input = this.inputList[i];
-              for(var j = 0; j < blockJson.args0.length; j++) {
+              for (var j = 0; j < blockJson.args0.length; j++) {
                 var jsonArgs = blockJson.args0[j];
                 if (jsonArgs.name == input.name && jsonArgs.shadow_type && input.connection) {
                   appendShadowBlock(this, input.name, jsonArgs.shadow_type, jsonArgs.value);
+                  if (jsonArgs.advanced == true) { input.advanced_mode = true; }
                 }
               }
             }

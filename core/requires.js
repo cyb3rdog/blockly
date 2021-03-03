@@ -46,7 +46,6 @@ goog.require('Blockly.VariablesDynamic');
 // "zoom"/"controls" configuration must be false.
 goog.require('Blockly.ZoomControls');
 
-
 // Block dependencies.
 // None of these should be required when using advanced compilation since
 // individual block files should include the requirements they depend on.
@@ -65,6 +64,9 @@ goog.require('Blockly.FieldSlider');
 goog.require('Blockly.FieldTime');
 goog.require('Blockly.FieldVariable');
 
+// Cyb3rBlock Advanced Mutator
+goog.require('Blockly.Cyb3rBlocks');
+goog.require('Blockly.Cyb3rBlocks.AdvancedMutator');
 
 // Blockly Renderers.
 // At least one renderer is mandatory.  Geras is the default one.
