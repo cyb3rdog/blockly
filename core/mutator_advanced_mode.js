@@ -144,6 +144,7 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setVisible = function(visible) {
  */
 Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setAdvancedMode = function(advanced) {
   this.block_.advanced_mode = !!advanced;
+  if (this.workspace && !this.workspace.rendered) { return; }
   if (advanced) {
     if (this.block_.isCollapsed()) { return; }
     for (var i = 0; i < this.block_.inputList.length; i++) {
@@ -241,6 +242,9 @@ Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_MIXIN = {
    * Hide all inputs marked as Advanced
    */
   hideAdvancedInputs: function() {
+    // prevent setting visibility flag in headless workspaces
+    // 'this.workspace.rendered' seems like the only indication
+    if (this.workspace && !this.workspace.rendered) { return; }
     for (var i = 0; i < this.inputList.length; i++) {
       var input = this.inputList[i];
       if (input.advanced_mode) {

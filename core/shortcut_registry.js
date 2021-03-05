@@ -285,13 +285,19 @@ Blockly.ShortcutRegistry.prototype.getKeyCodesByShortcutName = function(
  */
 Blockly.ShortcutRegistry.prototype.serializeKeyEvent_ = function(e) {
   var serializedKey = '';
-  for (var modifier in Blockly.ShortcutRegistry.modifierKeys) {
-    if (e.getModifierState(modifier)) {
-      if (serializedKey != '') {
-        serializedKey += '+';
+  if (e.getModifierState && typeof(e.getModifierState) == "function") {
+    for (var modifier in Blockly.ShortcutRegistry.modifierKeys) {
+      if (e.getModifierState(modifier)) {
+        if (serializedKey != '') { serializedKey += '+'; }
+        serializedKey += modifier;
       }
-      serializedKey += modifier;
     }
+  } else {
+    // What else should I do, when I dont have support for 'getModifierState'...
+    if (e.shiftKey) { ("" != serializedKey && (serializedKey += "+"), serializedKey += "Shift"); }
+    if (e.ctrlKey) { ("" != serializedKey && (serializedKey += "+"), serializedKey += "Control"); }
+    if (e.altKey) { ("" != serializedKey && (serializedKey += "+"), serializedKey += "Alt"); }
+    if (e.metaKey) { ("" != serializedKey && (serializedKey += "+"), serializedKey += "Meta"); }
   }
   if (serializedKey != '' && e.keyCode) {
     serializedKey = serializedKey + '+' + e.keyCode;

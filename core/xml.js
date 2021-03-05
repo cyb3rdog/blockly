@@ -83,7 +83,7 @@ Blockly.Xml.blockToDomWithXY = function(block, opt_noId) {
     block = block.getChildren(false)[0];
     if (!block) {
       // Disappears when appended.
-      return new DocumentFragment();
+      return document.createDocumentFragment();
     }
   }
 
@@ -150,7 +150,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
       return Blockly.Xml.blockToDom(child);
     } else {
       // Disappears when appended.
-      return new DocumentFragment();
+      return document.createDocumentFragment();
     }
   }
 
