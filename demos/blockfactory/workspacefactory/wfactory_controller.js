@@ -27,9 +27,9 @@ var WorkspaceFactoryController = WorkspaceFactoryController || Object.create(nul
 
 /**
  * Class for a WorkspaceFactoryController
- * @param {string} toolboxName Name of workspace toolbox XML.
- * @param {string} toolboxDiv Name of div to inject toolbox workspace in.
- * @param {string} previewDiv Name of div to inject preview workspace in.
+ * @param {string} toolbox Name of workspace toolbox XML.
+ * @param {string} workspace Name of div to inject toolbox workspace in.
+ * @param {string} preview Name of div to inject preview workspace in.
  * @constructor
  */
 WorkspaceFactoryController = function(toolbox, workspace, preview) {
@@ -309,7 +309,7 @@ WorkspaceFactoryController.prototype.exportXmlFile = function(exportMode) {
     this.hasUnsavedPreloadChanges = false;
   } else {
     // Unknown mode. Throw error.
-    var msg = 'Unknown export mode: ' + exportMode;    
+    var msg = 'Unknown export mode: ' + exportMode;
     throw Error(msg);
   }
 
@@ -1162,57 +1162,58 @@ WorkspaceFactoryController.prototype.importBlocks = function(file, format) {
   // To be executed when the reader has read the file.
   reader.onload = function() {
     return controller.importBlocksData(categoryName, reader.result, format);
-  }
+  };
 
   // Read the file asynchronously.
   reader.readAsText(file);
 };
 
-WorkspaceFactoryController.prototype.importBlocksData = function(categoryName, blocksData, format) {
+WorkspaceFactoryController.prototype.importBlocksData = function(
+    categoryName, blocksData, format, colour) {
   // Generate category name from file name.
   var controller = this;
 
-    try {
-      // Define blocks using block types from file.
-      var blockTypes = FactoryUtils.defineAndGetBlockTypes(blocksData,
-          format);
+  try {
+    // Define blocks using block types from file.
+    var blockTypes = FactoryUtils.defineAndGetBlockTypes(blocksData,
+        format);
 
-      // If an imported block type is already defined, check if the user wants
-      // to override the current block definition.
-      if (controller.model.hasDefinedBlockTypes(blockTypes)) {
-        var msg = 'An imported block uses the same name as a block '
-          + 'already in your toolbox. Are you sure you want to override the '
-          + 'currently defined block?';
-        var continueAnyway = confirm(msg);
-        if (!continueAnyway) {
-          return;
-        }
+    // If an imported block type is already defined, check if the user wants
+    // to override the current block definition.
+    if (controller.model.hasDefinedBlockTypes(blockTypes)) {
+      var msg = 'An imported block uses the same name as a block ' +
+          'already in your toolbox. Are you sure you want to override the ' +
+          'currently defined block?';
+      var continueAnyway = confirm(msg);
+      if (!continueAnyway) {
+        return;
       }
-
-      var blocks = controller.generator.getDefinedBlocks(blockTypes);
-      // Generate category XML and append to toolbox.
-      var categoryXml = FactoryUtils.generateCategoryXml(blocks, categoryName);
-      // Get random color for category between 0 and 360. Gives each imported
-      // category a different color.
-      var randomColor = Math.floor(Math.random() * 360);
-      categoryXml.setAttribute('colour', randomColor);
-      if (categoryName) {
-        controller.toolbox.appendChild(categoryXml);
-        controller.toolboxWorkspace.updateToolbox(controller.toolbox);
-      };
-      // Update imported block types.
-      controller.model.addImportedBlockTypes(blockTypes);
-      // Reload current category to possibly reflect any newly defined blocks.
-      //controller.clearAndLoadXml_
-      //    (Blockly.Xml.workspaceToDom(controller.toolboxWorkspace));
-
-      // Return the result toolbox xml
-      return categoryXml;
-    } catch (e) {
-      msg = 'Cannot read blocks from file.';
-      alert(msg);
-      window.console.log(e);
     }
+
+    var blocks = controller.generator.getDefinedBlocks(blockTypes);
+    // Generate category XML and append to toolbox.
+    var categoryXml = FactoryUtils.generateCategoryXml(blocks, categoryName);
+    // Get random color for category between 0 and 360. Gives each imported
+    // category a different color.
+    if (colour == undefined) { colour = Math.floor(Math.random() * 360); }
+    categoryXml.setAttribute('colour', colour);
+    if (categoryName) {
+      controller.toolbox.appendChild(categoryXml);
+      controller.toolboxWorkspace.updateToolbox(controller.toolbox);
+    }
+    // Update imported block types.
+    controller.model.addImportedBlockTypes(blockTypes);
+    // Reload current category to possibly reflect any newly defined blocks.
+    // controller.clearAndLoadXml_
+    //    (Blockly.Xml.workspaceToDom(controller.toolboxWorkspace));
+
+    // Return the result toolbox xml
+    return categoryXml;
+  } catch (e) {
+    msg = 'Cannot read blocks from file.';
+    alert(msg);
+    window.console.log(e);
+  }
 };
 
 /**

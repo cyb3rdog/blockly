@@ -34,21 +34,17 @@ goog.require('Blockly.WorkspaceSvg');
 goog.require('Blockly.Xml');
 
 
-/*
-Blockly.Cyb3rBlocks = {};
-*/
-
 /**
  * Class for a mutator dialog.
- * @param {!Array.<string>} quarkNames List of names of sub-blocks for flyout.
+ * @param {boolean} defaultMode A default mode for construction
  * @extends {Blockly.Icon}
  * @constructor
  */
-Blockly.Cyb3rBlocks.AdvancedMutator = function() {
+Blockly.Cyb3rBlocks.AdvancedMutator = function(defaultMode) {
   Blockly.Cyb3rBlocks.AdvancedMutator.superClass_.constructor.call(this, null); // null
 
   this.SIZE = 30;
-  this.advancedMode_ = false;
+  this.defaultMode_ = (defaultMode == true || defaultMode == "true");
   this.iconGroup_ = null;
   this.onButton_ = null;
   this.offButton_ = null;
@@ -70,6 +66,8 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.dispose = function() {
  */
 Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setBlock = function(block) {
   this.block_ = block;
+  // will be swapped back during the initial setVisible() call
+  this.block_.advanced_mode = this.defaultMode_;
 };
 
 /**
@@ -78,8 +76,6 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setBlock = function(block) {
  * @protected
  */
 Blockly.Cyb3rBlocks.AdvancedMutator.prototype.drawIcon_ = function(group) {
-  // Square with rounded corners.
-  this.iconGroup_ = group;
   if (this.block_.workspace.isDragging()) { return; }
   Blockly.utils.dom.createSvgElement(
       Blockly.utils.Svg.PATH,
@@ -108,8 +104,8 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.drawIcon_ = function(group) {
       },
       group);
 
-  this.onButton_.setAttribute('visibility', this.advancedMode_ ? 'hidden' : 'visible');
-  this.offButton_.setAttribute('visibility', this.advancedMode_ ? 'visible' : 'hidden');
+  this.onButton_.setAttribute('visibility', this.block_.advanced_mode ? 'visible' : 'hidden');
+  this.offButton_.setAttribute('visibility', this.block_.advanced_mode ? 'hidden' : 'visible');
 };
 
 /**
@@ -136,30 +132,32 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setVisible = function(visible) {
     this.updateButton();
     return;
   }
-
-  this.setAdvancedMode(!this.advancedMode_);
-  this.block_.render();
+  this.setAdvancedMode(!this.block_.advanced_mode);
+  if (this.block_.rendered) {
+    this.block_.render();
+  }
 };
 
 /**
  * Toggles the Adnvanced Mode
- * @param {boolean} mode True if the mode shoud be set to Advanced.
+ * @param {boolean} advanced True if the mode shoud be set to Advanced.
  */
-Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setAdvancedMode = function(mode) {
-  if (mode) {
+Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setAdvancedMode = function(advanced) {
+  this.block_.advanced_mode = !!advanced;
+  if (advanced) {
+    if (this.block_.isCollapsed()) { return; }
+    for (var i = 0; i < this.block_.inputList.length; i++) {
+      var input = this.block_.inputList[i];
+      input.setVisible(true);
+    }
+  } else {
     for (var i = 0; i < this.block_.inputList.length; i++) {
       var input = this.block_.inputList[i];
       if (input.advanced_mode) {
         input.setVisible(false);
       }
     }
-  } else {
-    for (var i = 0; i < this.block_.inputList.length; i++) {
-      var input = this.block_.inputList[i];
-      input.setVisible(true);
-    }
   }
-  this.advancedMode_ = mode;
   this.updateButton();
 };
 
@@ -167,11 +165,11 @@ Blockly.Cyb3rBlocks.AdvancedMutator.prototype.setAdvancedMode = function(mode) {
  * Updates the toggle button state
  */
 Blockly.Cyb3rBlocks.AdvancedMutator.prototype.updateButton = function() {
-  if (this.onButton_) {
-    this.onButton_.setAttribute('visibility', this.advancedMode_ ? 'hidden' : 'visible');
+  if (this.onButton_) { this.onButton_.setAttribute(
+      'visibility', this.block_.advanced_mode ? 'visible' : 'hidden');
   }
-  if (this.offButton_) {
-    this.offButton_.setAttribute('visibility', this.advancedMode_ ? 'visible' : 'hidden');
+  if (this.offButton_) { this.offButton_.setAttribute(
+      'visibility', this.block_.advanced_mode ? 'hidden' : 'visible');
   }
 };
 
@@ -194,8 +192,8 @@ Blockly.Css.register([
   '  stroke-miterlimit:10;',
   '}',
   '.advancedMutatorIconOff {',
-  '  fill:#ED7161;',
-  '  stroke:#D75A4A;',
+  '  fill:#BBBBBB;',   // '  fill:#ED7161;',
+  '  stroke:#9F9F9F;', // '  stroke:#D75A4A;',
   '  stroke-width:2;',
   '  stroke-linecap:round;',
   '  stroke-miterlimit:10;',
@@ -204,24 +202,26 @@ Blockly.Css.register([
 ]);
 
 /**
- * Mixin for mutator functions in the 'advanced_mode_mutator'
- * extension.
+ * Mixin for 'simple_mode_mutator' and 'advanced_mode_mutator' extensions.
  * @mixin
  * @augments Blockly.Block
  * @package
  */
-Blockly.Cyb3rBlocks.ADVANCED_MUTATOR_MIXIN = {
+Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_MIXIN = {
   /**
    * Create XML to represent whether the block is in Advanced mode.
    * @return {!Element} XML storage element.
    * @this {Blockly.Block}
    */
   mutationToDom: function() {
+    var container = Blockly.utils.xml.createElement('mutation');
+    container.setAttribute('advanced_mode', !!this.advanced_mode);
     if (this.mutator instanceof Blockly.Cyb3rBlocks.AdvancedMutator) {
-      var container = Blockly.utils.xml.createElement('mutation');
-      container.setAttribute('advanced_mode', this.mutator.advancedMode_);
-      return container;
+      this.mutator.setAdvancedMode(this.advanced_mode);
+    } else {
+      this.hideAdvancedInputs();
     }
+    return container;
   },
   /**
    * Parse XML to restore the Advanced Mode state.
@@ -229,25 +229,87 @@ Blockly.Cyb3rBlocks.ADVANCED_MUTATOR_MIXIN = {
    * @this {Blockly.Block}
    */
   domToMutation: function(xmlElement) {
+    var advanced_mode = (xmlElement.getAttribute('advanced_mode'));
+    this.advanced_mode = (advanced_mode == true || advanced_mode == "true");
     if (this.mutator instanceof Blockly.Cyb3rBlocks.AdvancedMutator) {
-      var advanced_mode = (xmlElement.getAttribute('advanced_mode'));
-      this.mutator.setAdvancedMode(advanced_mode == true || advanced_mode == "true");
+      this.mutator.setAdvancedMode(this.advanced_mode);
+    } else {
+      this.hideAdvancedInputs();
+    }
+  },
+  /**
+   * Hide all inputs marked as Advanced
+   */
+  hideAdvancedInputs: function() {
+    for (var i = 0; i < this.inputList.length; i++) {
+      var input = this.inputList[i];
+      if (input.advanced_mode) {
+        input.setVisible(false);
+      }
     }
   }
 };
 
 /**
- * 'advanced_mode_mutator' extension to the cyb3rblocks that
- * can update the block shape (hide or show inputs) based on
- * whether is in "advanced mode".
+ * Mixin for collapsed state override of advanced mode enabled blocks
+ * @mixin
+ * @augments Blockly.Block
+ * @package
+ */
+Blockly.Cyb3rBlocks.ADVANCED_MODE_OVERRIDE_MIXIN = {
+  /**
+   * Set whether the block is collapsed or not.
+   * @param {boolean} collapsed True if collapsed.
+   * @this {Blockly.Block}
+   */
+  setCollapsed: function(collapsed) {
+    if (this.collapsed_ == collapsed) {
+      return;
+    }
+    Blockly.BlockSvg.superClass_.setCollapsed.call(this, collapsed);
+    if (!collapsed) {
+      this.updateCollapsed_();
+      if (this.mutator instanceof Blockly.Cyb3rBlocks.AdvancedMutator) {
+        this.mutator.setAdvancedMode(this.advanced_mode);
+      } else {
+        this.hideAdvancedInputs();
+      }
+    }
+    if (this.rendered) {
+      this.render();
+    }
+  }
+};
+
+
+/**
+ * 'advanced_mode_mutator' extension to the cyb3rblocks that can
+ * update the block shape (hide or show inputs) based on whether
+ * the block is or is not in "advanced mode".
  * @this {Blockly.Block}
  * @package
  */
-Blockly.Cyb3rBlocks.ADVANCED_MUTATOR_EXTENSION = function() {
-  this.setMutator(new Blockly.Cyb3rBlocks.AdvancedMutator(this));
+Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_EXTENSION = function() {
+  this.setMutator(new Blockly.Cyb3rBlocks.AdvancedMutator(false));
+  this.mixin(Blockly.Cyb3rBlocks.ADVANCED_MODE_OVERRIDE_MIXIN, true);
 };
 
 Blockly.Extensions.registerMutator('advanced_mode_mutator',
-    Blockly.Cyb3rBlocks.ADVANCED_MUTATOR_MIXIN,
-    Blockly.Cyb3rBlocks.ADVANCED_MUTATOR_EXTENSION,
+    Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_MIXIN,
+    Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_EXTENSION,
     null);
+
+
+/**
+ * 'simple_mode_mutator' extension to the cyb3rblocks that can
+ * update the block shape and hide all inputs marked as advanced.
+ * @this {Blockly.Block}
+ * @package
+ */
+Blockly.Cyb3rBlocks.SIMPLE_MODE_MUTATOR_EXTENSION = function() {
+  this.mixin(Blockly.Cyb3rBlocks.ADVANCED_MODE_OVERRIDE_MIXIN, true);
+};
+
+Blockly.Extensions.registerMutator('simple_mode_mutator',
+    Blockly.Cyb3rBlocks.ADVANCED_MODE_MUTATOR_MIXIN,
+    Blockly.Cyb3rBlocks.SIMPLE_MODE_MUTATOR_EXTENSION);

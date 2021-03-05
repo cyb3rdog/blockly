@@ -66,7 +66,7 @@ else:
   from importlib import reload
 
 # Read package.json and extract the current Blockly version.
-blocklyVersion = json.loads(open('package.json', 'r').read())['version']
+blocklyVersion = json.loads(open('package.json', 'r').read())['version'] + ".cyb3rblockly"
 
 def import_path(fullpath):
   """Import a file with full path specification.

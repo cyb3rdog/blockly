@@ -400,11 +400,11 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
 
 /**
  * Generate a unique ID.  This should be globally unique.
- * 87 characters ^ 20 length > 128 bits (better than a UUID).
+ * 62 characters ^ 22 length > 128 bits (better than a UUID).
  * @return {string} A globally unique ID string.
  */
 Blockly.utils.genUid = function() {
-  var length = 20;
+  var length = 22;
   var soupLength = Blockly.utils.genUid.soup_.length;
   var id = [];
   for (var i = 0; i < length; i++) {
@@ -414,13 +414,12 @@ Blockly.utils.genUid = function() {
 };
 
 /**
- * Legal characters for the unique ID.  Should be all on a US keyboard.
- * No characters that conflict with XML or JSON.  Requests to remove additional
- * 'problematic' characters from this soup will be denied.  That's your failure
- * to properly escape in your own environment.  Issues #251, #625, #682, #1304.
+ * Legal characters for the unique ID. Alphanumeric only. No Issues whatsoever.
+ * No extra time necessary for escaping and because I want it that way. Period.
+ * Forget it Neil, I've never seen dumber Id's.
  * @private
  */
-Blockly.utils.genUid.soup_ = '!#$%()*+,-./:;=?@[]^_`{|}~' +
+Blockly.utils.genUid.soup_ =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 /**
